@@ -17,13 +17,40 @@ Usamos **Auditgate** (`github.com/Jawy77/auditgate`): un gate que **bloquea solo
 
 ## 0. Preparar (5 min)
 
+El CLI se instala desde el repositorio (el paquete de PyPI está desactualizado y no trae `scan`). Usen `--force` para sobrescribir una instalación vieja.
+
 ```bash
-pipx install "git+https://github.com/Jawy77/auditgate"   # trae el CLI
-brew install gitleaks osv-scanner && pipx install semgrep  # las herramientas del gate
-auditgate doctor                                           # revisa la instalación
+pipx install --force "git+https://github.com/Jawy77/auditgate"   # trae el CLI (con scan)
 ```
 
-En la VM del curso las herramientas ya están. Si falta una, ese control se omite y lo avisa; el gate nunca da un verde engañoso.
+Luego las herramientas del gate, según su sistema:
+
+**macOS**
+```bash
+brew install gitleaks osv-scanner && pipx install semgrep
+```
+
+**Ubuntu / Debian / Kali**
+```bash
+pipx install semgrep                                    # sast (imprescindible)
+# gitleaks y osv-scanner por binario (opcionales):
+GL=8.21.2; curl -sL https://github.com/gitleaks/gitleaks/releases/download/v$GL/gitleaks_${GL}_linux_x64.tar.gz | sudo tar -xz -C /usr/local/bin gitleaks
+OSV=1.9.1; sudo curl -sL -o /usr/local/bin/osv-scanner https://github.com/google/osv-scanner/releases/download/v$OSV/osv-scanner_linux_amd64 && sudo chmod +x /usr/local/bin/osv-scanner
+```
+
+> En Kali/Debian, si `pipx install semgrep` falla por *externally-managed-environment* (PEP 668), usen:
+> `pip3 install --break-system-packages --ignore-installed semgrep`
+
+Verifiquen **dentro de un repositorio git** (no en la carpeta home, o dirá «No detecto el repo»):
+
+```bash
+cd su-repo          # o un clon: git clone https://github.com/Jawy77/auditgate && cd auditgate
+auditgate doctor    # revisa la instalación
+```
+
+En la VM del curso las herramientas ya están. Si falta una, ese control se omite y lo avisa; el gate nunca da un verde engañoso. Semgrep (sast) es el único imprescindible para el laboratorio.
+
+**Atajo sin pipx** (evita el CLI viejo): desde un clon del repo, `PYTHONPATH=src python3 -m auditgate scan`.
 
 ## 1. Instalar el gate en el repo del equipo (10 min)
 
