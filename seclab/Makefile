@@ -18,8 +18,8 @@ cook:            ## Solo la animación de Heisenberg (prueba)
 	@./bin/heisenberg.sh --demo
 
 demo:            ## Levanta un lab, corre el exploit y lo baja:  make demo LAB=02-...
-	@cd labs/$(LAB) && docker compose up -d --build && sleep 4 && ./exploit.sh; \
-	 cd labs/$(LAB) && docker compose down
+	@( cd labs/$(LAB) && docker compose up -d --build && sleep 4 && ./exploit.sh ); \
+	 docker compose -f labs/$(LAB)/docker-compose.yml down -v
 
 up:              ## Levanta un lab:  make up LAB=01-log4shell
 	@cd labs/$(LAB) && docker compose up -d --build
