@@ -1,0 +1,27 @@
+# Auditgate — https://github.com/Jawy77/auditgate
+name: Auditgate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  auditgate:
+    # Fijado por SHA: es exactamente el código que revisamos (main de hoy)
+    uses: Jawy77/auditgate/.github/workflows/security-platform.yml@07faee3bc9092019a8543b6168f72f3b963afcb6
+    permissions:
+      contents: read
+      security-events: write   # sube los hallazgos a la pestaña Security → Code scanning
+      pull-requests: write     # lo pide el job de IA (desactivado abajo)
+      id-token: write          # ídem
+    with:
+      platform-ref: 07faee3bc9092019a8543b6168f72f3b963afcb6   # mismo SHA que el uses:
+      image-dockerfile: ""     # no hay Dockerfile en la raíz
+      iac-dir: ""              # no hay Terraform
+      enforce-pinned-actions: true
+      ai-triage: false         # solo el gate determinista, sin modelo ni llave
